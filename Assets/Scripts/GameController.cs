@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
         {
             
             CaroSpaces[i].interactable = true;
-            CaroSpaces[i].GetComponent<Image>().sprite = null;
+            CaroSpaces[i].GetComponent<Image>().sprite = null;           
            
         }
         for(int j = 0; j < CaroSpaces.Length ; j++)

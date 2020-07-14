@@ -11,6 +11,8 @@ using Random = UnityEngine.Random;
 
 
 
+
+
 public class GameController : MonoBehaviour
 {
     
@@ -22,6 +24,10 @@ public class GameController : MonoBehaviour
     public Button[] CaroSpaces;
     public int[] markedSpaces;
     int[,] matrix = new int[21,21];
+    public Text WinerText;
+    public Image think;
+    public AudioSource ButtonClick;
+    public AudioSource WinAudio;
 
     private bool player;
     private bool computer;
@@ -63,17 +69,38 @@ public class GameController : MonoBehaviour
     
     void Update()
     {
-        if (player == false)
-        {
-            value = Random.Range(0, 440);
-            if (CaroSpaces[value].interactable == true)
-            {
-                carobutton(value);
-            }
+        // if (player == false)
+        // {
+        //     value = Random.Range(0, 440);
+        //     if (CaroSpaces[value].interactable == true)
+        //     {
+        //         carobutton(value);
+        //     }
 
-        }
+        // }
     }
     
+    void Winer(string wintext){
+
+        WinerText.gameObject.SetActive(true);
+        think.gameObject.SetActive(true);
+        WinerText.text = wintext;
+       
+        WinerText.text = wintext;
+       
+        for(int i = 0; i<CaroSpaces.Length;i++)
+        {
+            CaroSpaces[i].interactable = false;
+        }
+    }
+    public void ButtonAudio(){
+        ButtonClick.Play();
+
+    }
+    public void WinerSound()
+    {
+        WinAudio.Play();
+    }
     public void carobutton(int WhichNumber)
     {
         CaroSpaces[WhichNumber].image.sprite = playIcon[whoturn];
@@ -100,11 +127,13 @@ public class GameController : MonoBehaviour
         }
         if (isEndGame(xpos,ypos) == 1)
         {
-            Debug.Log("Computer win");
+            Winer("Player X Win!!!!!!");
+            WinerSound();
         }
         if (isEndGame(xpos, ypos) == -1)
         {
-            Debug.Log("Player win");
+            Winer("Player O Win!!!!!!");
+            WinerSound();
         }
     }
     
@@ -393,6 +422,13 @@ public class GameController : MonoBehaviour
     public void exitbutton()
     {
         Application.Quit();
+    }
+    public void newgamebutton()
+    {
+        GameSetup();
+        WinerText.gameObject.SetActive(false);
+        think.gameObject.SetActive(false);
+
     }
 }
 

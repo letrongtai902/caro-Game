@@ -492,47 +492,6 @@ public void computerplay()
         }
         carobutton(Buocdi);
     }
-    public void computerplay()
-{
-    int DiemMax = 0;
-    int DiemPhongNgu = 0;
-    int DiemTanCong = 0;
-    int Buocdi=0;
-    if(whoturn == 0 && TurnCount==0)
-    {
-        carobutton(200);
-    }
-    if(whoturn == 0)
-    {
-        for (int i = 0; i < 21; i++)
-        {
-            for (int j = 0; j < 21; j++)
-            {
-                if (matrix[i, j] == -1 && !catTia(i,j))
-                {
-                    int DiemTam = 0;
-                    DiemTanCong = duyetTC_Ngang(i, j) + duyetTC_Doc(i, j) + duyetTC_CheoXuoi(i, j) + duyetTC_CheoNguoc(i, j);
-                    DiemPhongNgu = duyetPN_Ngang(i, j) + duyetPN_Doc(i, j) + duyetPN_CheoXuoi(i, j) + duyetPN_CheoNguoc(i, j);
-                    //Debug.Log(duyetTC_Ngang(i, j)+ " "+ DiemPhongNgu);
-                    if (DiemPhongNgu > DiemTanCong)
-                    {
-                        DiemTam = DiemPhongNgu;
-                    }
-                    else
-                    {
-                        DiemTam = DiemTanCong;
-                    }
-                    if (DiemMax < DiemTam)
-                    {
-                        DiemMax = DiemTam;
-                        Buocdi = i*21 + j;
-                    }
-                }
-            } 
-        }
-        carobutton(Buocdi);
-    }
-}
 }
 #region Cắt tỉa Alpha betal
     bool catTia(int i, int j)

@@ -450,6 +450,73 @@ public class GameController : MonoBehaviour
         think.gameObject.SetActive(false);
     }
 #endregion
+#region Cắt tỉa Alpha betal
+    bool catTia(int i, int j)
+    {
+        if (catTiaNgang(i,j) && catTiaDoc(i,j) && catTiaCheoPhai(i,j) && catTiaCheoTrai(i,j))
+            return true;
+
+        return false;
+    }
+
+    bool catTiaNgang(int i, int j)
+    {
+        if (j <= 20 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i,j+k] != -1)
+                    return false;
+
+        if (j >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i,j-k] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaDoc(int i, int j)
+    {
+        if (i <= 20 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j] != -1)
+                    return false;
+
+
+        if (i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaCheoPhai(int i, int j)
+    {
+        if (i <= 20 - 5 && j >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j-k] != -1)
+                    return false;
+
+        if (j <= 20 - 5 && i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j+k] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaCheoTrai(int i, int j)
+    {
+        if (i <= 20 - 5 && j <= 21 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j+k] != -1)
+                    return false;
+
+        if (j >= 4 && i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j-k] != -1)
+                    return false;
+
+        return true;
+    }
+#endregion
 }
 
 

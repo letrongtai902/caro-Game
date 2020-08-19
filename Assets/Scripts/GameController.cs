@@ -69,15 +69,7 @@ public class GameController : MonoBehaviour
     
     void Update()
     {
-        // if (player == false)
-        // {
-        //     value = Random.Range(0, 440);
-        //     if (CaroSpaces[value].interactable == true)
-        //     {
-        //         carobutton(value);
-        //     }
-
-        // }
+       
     }
     
     void Winer(string wintext){
@@ -419,6 +411,7 @@ public class GameController : MonoBehaviour
         }
         return 0;
     }
+    #region  buttoncontrol
     public void exitbutton()
     {
         Application.Quit();
@@ -428,8 +421,35 @@ public class GameController : MonoBehaviour
         GameSetup();
         WinerText.gameObject.SetActive(false);
         think.gameObject.SetActive(false);
-
     }
+    public void ButtonAudio(){
+        ButtonClick.Play();
+    }
+    public void WinerSound()
+    {
+        WinAudio.Play();
+    }
+    public void LoseSound()
+    {
+        LoseAudio.Play();
+    }
+    public void playervscom()
+    {
+        GameSetup();
+        com = false;
+        player = true;
+        WinerText.gameObject.SetActive(false);
+        think.gameObject.SetActive(false);
+    }
+    public void playervsplayer()
+    {
+        GameSetup();
+        player = false;
+        com = true;
+        WinerText.gameObject.SetActive(false);
+        think.gameObject.SetActive(false);
+    }
+#endregion
 }
 
 

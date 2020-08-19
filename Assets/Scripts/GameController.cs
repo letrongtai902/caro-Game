@@ -69,15 +69,7 @@ public class GameController : MonoBehaviour
     
     void Update()
     {
-        // if (player == false)
-        // {
-        //     value = Random.Range(0, 440);
-        //     if (CaroSpaces[value].interactable == true)
-        //     {
-        //         carobutton(value);
-        //     }
-
-        // }
+       
     }
     
     void Winer(string wintext){
@@ -419,6 +411,7 @@ public class GameController : MonoBehaviour
         }
         return 0;
     }
+    #region  buttoncontrol
     public void exitbutton()
     {
         Application.Quit();
@@ -428,8 +421,102 @@ public class GameController : MonoBehaviour
         GameSetup();
         WinerText.gameObject.SetActive(false);
         think.gameObject.SetActive(false);
-
     }
+    public void ButtonAudio(){
+        ButtonClick.Play();
+    }
+    public void WinerSound()
+    {
+        WinAudio.Play();
+    }
+    public void LoseSound()
+    {
+        LoseAudio.Play();
+    }
+    public void playervscom()
+    {
+        GameSetup();
+        com = false;
+        player = true;
+        WinerText.gameObject.SetActive(false);
+        think.gameObject.SetActive(false);
+    }
+    public void playervsplayer()
+    {
+        GameSetup();
+        player = false;
+        com = true;
+        WinerText.gameObject.SetActive(false);
+        think.gameObject.SetActive(false);
+    }
+#endregion
+#region Cắt tỉa Alpha betal
+    bool catTia(int i, int j)
+    {
+        if (catTiaNgang(i,j) && catTiaDoc(i,j) && catTiaCheoPhai(i,j) && catTiaCheoTrai(i,j))
+            return true;
+
+        return false;
+    }
+
+    bool catTiaNgang(int i, int j)
+    {
+        if (j <= 20 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i,j+k] != -1)
+                    return false;
+
+        if (j >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i,j-k] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaDoc(int i, int j)
+    {
+        if (i <= 20 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j] != -1)
+                    return false;
+
+
+        if (i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaCheoPhai(int i, int j)
+    {
+        if (i <= 20 - 5 && j >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j-k] != -1)
+                    return false;
+
+        if (j <= 20 - 5 && i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j+k] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaCheoTrai(int i, int j)
+    {
+        if (i <= 20 - 5 && j <= 21 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j+k] != -1)
+                    return false;
+
+        if (j >= 4 && i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j-k] != -1)
+                    return false;
+
+        return true;
+    }
+#endregion
 }
 
 

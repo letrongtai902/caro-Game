@@ -28,12 +28,11 @@ public class GameController : MonoBehaviour
     public Image think;
     public AudioSource ButtonClick;
     public AudioSource WinAudio;
-
-    private bool player;
-    private bool computer;
+    public AudioSource LoseAudio;
     public float delay;
     public int value;
-
+    public bool player = true;
+    public bool com = false;
     void Start()
     {
         GameSetup();
@@ -43,7 +42,8 @@ public class GameController : MonoBehaviour
         
         whoturn = 0;
         TurnCount = 0;
-        
+        player = true;
+        com = false;
         turnIcons[0].SetActive(true);
         turnIcons[1].SetActive(false);
         for (int i = 0; i < CaroSpaces.Length; i++)
@@ -60,7 +60,7 @@ public class GameController : MonoBehaviour
         }
         for (int h = 0; h < 21; h++)
         {
-            for (int k = 0; k < 21; k++)
+            for (int k = 1; k < 21; k++)
             {
                 matrix[h,k] = -1;
             }
@@ -68,18 +68,12 @@ public class GameController : MonoBehaviour
     }
     
     void Update()
-    {
-        // if (player == false)
-        // {
-        //     value = Random.Range(0, 440);
-        //     if (CaroSpaces[value].interactable == true)
-        //     {
-        //         carobutton(value);
-        //     }
-
-        // }
+    {  
+         if(com == true)
+        { 
+            computerplay();
+        }   
     }
-    
     void Winer(string wintext){
 
         WinerText.gameObject.SetActive(true);
@@ -93,34 +87,24 @@ public class GameController : MonoBehaviour
             CaroSpaces[i].interactable = false;
         }
     }
-    public void ButtonAudio(){
-        ButtonClick.Play();
-
-    }
-    public void WinerSound()
-    {
-        WinAudio.Play();
-    }
     public void carobutton(int WhichNumber)
     {
         CaroSpaces[WhichNumber].image.sprite = playIcon[whoturn];
         CaroSpaces[WhichNumber].interactable = false;
         markedSpaces[WhichNumber] = whoturn;
         TurnCount++;
-        int ypos = (int)(WhichNumber) / 21;
-        int xpos = (int)(WhichNumber) % 21;       
+        int xpos = (int)(WhichNumber) / 21;
+        int ypos = (int)(WhichNumber) % 21;       
         matrix[xpos,ypos] = whoturn;
-        //Debug.Log(xpos + " " + ypos + " " + matrix[xpos,ypos]);
+        Debug.Log(xpos + " " + ypos + " " + matrix[xpos,ypos]);
+        Debug.Log(isEndGameVer(xpos,ypos)+" "+isEndGameHori(xpos,ypos));
         if (whoturn == 0)
         {
-            player = true;
             whoturn = 1;
             turnIcons[0].SetActive(false);
             turnIcons[1].SetActive(true);
-
         } else
         {
-            player = false;
             whoturn = 0;
             turnIcons[0].SetActive(true);
             turnIcons[1].SetActive(false);
@@ -128,7 +112,14 @@ public class GameController : MonoBehaviour
         if (isEndGame(xpos,ypos) == 1)
         {
             Winer("Player X Win!!!!!!");
-            WinerSound();
+            if(com == true)
+            {
+                LoseSound();
+            }
+            else
+            {
+                WinerSound();
+            }
         }
         if (isEndGame(xpos, ypos) == -1)
         {
@@ -136,7 +127,8 @@ public class GameController : MonoBehaviour
             WinerSound();
         }
     }
-    
+
+#region checkendgame    
     private int isEndGame(int x, int y)
     {
         if ((isEndGameVer(x,y) == 10) || (isEndGameHori(x,y) == 10) || (isEndGamePrimory(x,y) == 10) || (isEndGameSub(x,y) == 10))
@@ -149,15 +141,14 @@ public class GameController : MonoBehaviour
         }
         return 0;
     }
-     private int isEndGameVer(int x, int y)
+    private int isEndGameVer(int x, int y)
     {
         int countTopO = 0;
-        for(int i = y; i >= 0 ; i--)
+        for(int i = x; i >= 0 ; i--)
         {
-            if(matrix[x,i] == 1)
+            if(matrix[i,y] == 1)
             {
                 countTopO++;
-                
             }
             else
             {
@@ -165,9 +156,9 @@ public class GameController : MonoBehaviour
             }
         }
         int countButtonO = 0;
-        for (int i = y+1; i < 21; i++)
+        for (int i = x + 1; i < 21; i++)
         {
-            if (matrix[x, i] == 1)
+            if (matrix[i, y] == 1)
             {
                 countButtonO++;
                 
@@ -178,9 +169,9 @@ public class GameController : MonoBehaviour
             }
         }
         int countTopX = 0;
-        for (int i = y; i >= 0; i--)
+        for (int i = x; i >= 0; i--)
         {
-            if (matrix[x, i] == 0)
+            if (matrix[i, y] == 0)
             {
                 countTopX++;
 
@@ -191,9 +182,9 @@ public class GameController : MonoBehaviour
             }
         }
         int countButtonX = 0;
-        for (int i = y + 1; i < 21; i++)
+        for (int i = x + 1; i < 21; i++)
         {
-            if (matrix[x, i] == 0)
+            if (matrix[i, y] == 0)
             {
                 countButtonX++;
 
@@ -212,9 +203,9 @@ public class GameController : MonoBehaviour
     private int isEndGameHori(int x, int y)
     {
         int countLeftO = 0;
-        for (int i = x; i >= 0; i--)
+        for (int i = y; i >= 0; i--)
         {
-            if (matrix[i, y] == 1)
+            if (matrix[x, i] == 1)
             {
                 countLeftO++;
                 
@@ -225,9 +216,9 @@ public class GameController : MonoBehaviour
             }
         }
         int countRightO = 0;
-        for (int i = x + 1; i < 21; i++)
+        for (int i = y + 1; i < 21; i++)
         {
-            if (matrix[i, y] == 1)
+            if (matrix[x, i] == 1)
             {
                 countRightO++;
                 
@@ -238,9 +229,9 @@ public class GameController : MonoBehaviour
             }
         }
         int countLeftX = 0;
-        for (int i = x; i >= 0; i--)
+        for (int i = y; i >= 0; i--)
         {
-            if (matrix[i, y] == 0)
+            if (matrix[x, i] == 0)
             {
                 countLeftX++;
 
@@ -251,9 +242,9 @@ public class GameController : MonoBehaviour
             }
         }
         int countRightX = 0;
-        for (int i = x + 1; i < 21; i++)
+        for (int i = y + 1; i < 21; i++)
         {
-            if (matrix[i, y] == 0)
+            if (matrix[x, i] == 0)
             {
                 countRightX++;
 
@@ -419,6 +410,9 @@ public class GameController : MonoBehaviour
         }
         return 0;
     }
+#endregion
+
+#region  buttoncontrol
     public void exitbutton()
     {
         Application.Quit();
@@ -428,8 +422,683 @@ public class GameController : MonoBehaviour
         GameSetup();
         WinerText.gameObject.SetActive(false);
         think.gameObject.SetActive(false);
+    }
+    public void ButtonAudio(){
+        ButtonClick.Play();
+    }
+    public void WinerSound()
+    {
+        WinAudio.Play();
+    }
+    public void LoseSound()
+    {
+        LoseAudio.Play();
+    }
+    public void playervscom()
+    {
+        GameSetup();
+        com = false;
+        player = true;
+        WinerText.gameObject.SetActive(false);
+        think.gameObject.SetActive(false);
+    }
+    public void playervsplayer()
+    {
+        GameSetup();
+        player = false;
+        com = true;
+        WinerText.gameObject.SetActive(false);
+        think.gameObject.SetActive(false);
+    }
+#endregion
 
+public void computerplay()
+{
+    int DiemMax = 0;
+    int DiemPhongNgu = 0;
+    int DiemTanCong = 0;
+    int Buocdi=0;
+    if(whoturn == 0 && TurnCount==0)
+    {
+        carobutton(200);
+    }
+    if(whoturn == 0)
+    {
+        for (int i = 0; i < 21; i++)
+        {
+            for (int j = 0; j < 21; j++)
+            {
+                if (matrix[i, j] == -1 && !catTia(i,j))
+                {
+                    int DiemTam = 0;
+                    DiemTanCong = duyetTC_Ngang(i, j) + duyetTC_Doc(i, j) + duyetTC_CheoXuoi(i, j) + duyetTC_CheoNguoc(i, j);
+                    DiemPhongNgu = duyetPN_Ngang(i, j) + duyetPN_Doc(i, j) + duyetPN_CheoXuoi(i, j) + duyetPN_CheoNguoc(i, j);
+                    //Debug.Log(duyetTC_Ngang(i, j)+ " "+ DiemPhongNgu);
+                    if (DiemPhongNgu > DiemTanCong)
+                    {
+                        DiemTam = DiemPhongNgu;
+                    }
+                    else
+                    {
+                        DiemTam = DiemTanCong;
+                    }
+                    if (DiemMax < DiemTam)
+                    {
+                        DiemMax = DiemTam;
+                        Buocdi = i*21 + j;
+                    }
+                }
+            } 
+        }
+        carobutton(Buocdi);
     }
 }
+#region Cắt tỉa Alpha betal
+    bool catTia(int i, int j)
+    {
+        if (catTiaNgang(i,j) && catTiaDoc(i,j) && catTiaCheoPhai(i,j) && catTiaCheoTrai(i,j))
+            return true;
+
+        return false;
+    }
+
+    bool catTiaNgang(int i, int j)
+    {
+        if (j <= 20 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i,j+k] != -1)
+                    return false;
+
+        if (j >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i,j-k] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaDoc(int i, int j)
+    {
+        if (i <= 20 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j] != -1)
+                    return false;
 
 
+        if (i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaCheoPhai(int i, int j)
+    {
+        if (i <= 20 - 5 && j >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j-k] != -1)
+                    return false;
+
+        if (j <= 20 - 5 && i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j+k] != -1)
+                    return false;
+
+        return true;
+    }
+    bool catTiaCheoTrai(int i, int j)
+    {
+        if (i <= 20 - 5 && j <= 21 - 5)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i+k,j+k] != -1)
+                    return false;
+
+        if (j >= 4 && i >= 4)
+            for (int k = 1; k <= 4; k++)
+                if (matrix[i-k,j-k] != -1)
+                    return false;
+
+        return true;
+    }
+#endregion
+#region AI
+    private int[] MangDiemTanCong = new int[7] { 0, 4, 25, 246, 7300, 6561, 59049 };
+    private int[] MangDiemPhongNgu = new int[7] { 0, 3, 24, 243, 2197, 19773, 177957 };
+#region tancong
+    private int  duyetTC_Ngang(int i, int j)
+    {
+        int DiemTanCong = 0;
+        int SoQuanTa = 0;
+        int SoQuanDichTren = 0;
+        int SoQuanDichDuoi = 0;
+        int Khoangtrong = 0;
+        for (int dem = 1; dem <= 4 && j < 21 - 5; dem++)
+        {
+
+            if (matrix[i, j + dem] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+            }
+            else
+                if (matrix[i, j + dem] == 1)
+                {
+                    SoQuanDichTren++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+        for (int dem = 1; dem <= 4 && j > 4; dem++)
+        {
+            if (matrix[i, j - dem] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+
+            }
+            else
+                if (matrix[i, j - dem] == 1)
+                {
+                    SoQuanDichDuoi++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+            if (SoQuanDichTren > 0 && SoQuanDichDuoi > 0 && Khoangtrong < 4)
+                return 0;
+
+        DiemTanCong -= MangDiemPhongNgu[SoQuanDichTren + SoQuanDichDuoi];
+        DiemTanCong += MangDiemTanCong[SoQuanTa];
+        return DiemTanCong;
+    }
+    private int  duyetTC_Doc(int i, int j)
+    {
+        int DiemTanCong = 0;
+        int SoQuanTa = 0;
+        int SoQuanDichTren = 0;
+        int SoQuanDichDuoi = 0;
+        int Khoangtrong = 0;
+        for (int dem = 1; dem <= 4 && i < 21 - 5; dem++)
+        {
+
+            if (matrix[i+dem, j] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+            }
+            else
+                if (matrix[i+dem, j] == 1)
+                {
+                    SoQuanDichTren++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+        for (int dem = 1; dem <= 4 && i > 4; dem++)
+        {
+            if (matrix[i-dem, j] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+
+            }
+            else
+                if (matrix[i-dem, j] == 1)
+                {
+                    SoQuanDichDuoi++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+            //bị chặn 2 đầu khoảng chống không đủ tạo thành 5 nước
+            if (SoQuanDichTren > 0 && SoQuanDichDuoi > 0 && Khoangtrong < 4)
+                return 0;
+
+        DiemTanCong -= MangDiemPhongNgu[SoQuanDichTren + SoQuanDichDuoi];
+        DiemTanCong += MangDiemTanCong[SoQuanTa];
+        return DiemTanCong;
+
+    }
+    private int  duyetTC_CheoXuoi(int i, int j)
+    {
+        int DiemTanCong = 0;
+        int SoQuanTa = 0;
+        int SoQuanDichTren = 0;
+        int SoQuanDichDuoi = 0;
+        int Khoangtrong = 0;
+        for (int dem = 1; dem <= 4 && j < 21 - 5 && i<21-5; dem++)
+        {
+
+            if (matrix[i+dem, j+dem] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+            }
+            else
+                if (matrix[i+dem, j+dem] == 1)
+                {
+                    SoQuanDichTren++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+        for (int dem = 1; dem <= 4 && i > 4 && j > 4; dem++)
+        {
+            if (matrix[i-dem, j-dem] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+
+            }
+            else
+                if (matrix[i-dem, j-dem] == 1)
+                {
+                    SoQuanDichDuoi++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+            //bị chặn 2 đầu khoảng chống không đủ tạo thành 5 nước
+            if (SoQuanDichTren > 0 && SoQuanDichDuoi > 0 && Khoangtrong < 4)
+                return 0;
+
+        DiemTanCong -= MangDiemPhongNgu[SoQuanDichTren + SoQuanDichDuoi];
+        DiemTanCong += MangDiemTanCong[SoQuanTa];
+        return DiemTanCong;
+    }
+    private int  duyetTC_CheoNguoc(int i, int j)
+    {
+        int DiemTanCong = 0;
+        int SoQuanTa = 0;
+        int SoQuanDichTren = 0;
+        int SoQuanDichDuoi = 0;
+        int Khoangtrong = 0;
+        for (int dem = 1; dem <= 4 && j < 21 - 5 && i > 4; dem++)
+        {
+
+            if (matrix[i-dem, j+dem] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+            }
+            else
+                if (matrix[i-dem, j+dem] == 1)
+                {
+                    SoQuanDichTren++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+        for (int dem = 1; dem <= 4 && j > 4 && i <21 - 5; dem++)
+        {
+            if (matrix[i+dem, j-dem] == 0)
+            {
+                if (dem == 1)
+                    DiemTanCong += 37;
+
+                SoQuanTa++;
+                Khoangtrong++;
+
+            }
+            else
+                if (matrix[i+dem, j-dem] == 1)
+                {
+                    SoQuanDichDuoi++;
+                    break;
+                }
+                else Khoangtrong++;
+        }
+            if (SoQuanDichTren > 0 && SoQuanDichDuoi > 0 && Khoangtrong < 4)
+                return 0;
+
+        DiemTanCong -= MangDiemPhongNgu[SoQuanDichTren + SoQuanDichDuoi];
+        DiemTanCong += MangDiemTanCong[SoQuanTa];
+        return DiemTanCong;
+
+    }
+#endregion
+#region phongngu
+     private int  duyetPN_Ngang(int i, int j)
+    {
+        int DiemPhongNgu = 0;
+        int SoQuanTaTrai = 0;
+        int SoQuanTaPhai = 0;
+        int SoQuanDich = 0;
+        int KhoangTrongPhai = 0;
+        int KhoangTrongTrai = 0;
+        bool ok = false;
+
+
+        for (int dem = 1; dem <= 4 && j < 21 - 5; dem++)
+        {
+            if (matrix[i, j + dem] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i, j + dem] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaTrai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongPhai++;
+                }
+        }
+
+        if (SoQuanDich == 3 && KhoangTrongPhai == 1 && ok)
+            DiemPhongNgu -= 200;
+
+        ok = false;
+
+        for (int dem = 1; dem <= 4 && j > 4; dem++)
+        {
+            if (matrix[i, j - dem] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i, j - dem] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaPhai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongTrai++;
+                }
+        }
+
+        if (SoQuanDich == 3 && KhoangTrongTrai == 1 && ok)
+            DiemPhongNgu -= 200;
+
+        if (SoQuanTaPhai > 0 && SoQuanTaTrai > 0 && (KhoangTrongTrai + KhoangTrongPhai + SoQuanDich) < 4)
+            return 0;
+
+        DiemPhongNgu -= MangDiemTanCong[SoQuanTaPhai + SoQuanTaPhai];
+        DiemPhongNgu += MangDiemPhongNgu[SoQuanDich];
+
+        return DiemPhongNgu;
+    }
+    private int  duyetPN_Doc(int i, int j)
+    {
+        
+        int DiemPhongNgu = 0;
+        int SoQuanTaTrai = 0;
+        int SoQuanTaPhai = 0;
+        int SoQuanDich = 0;
+        int KhoangTrongTren = 0;
+        int KhoangTrongDuoi = 0;
+        bool ok = false;
+        for (int dem = 1; dem <= 4 && i > 4; dem++)
+        {
+            if (matrix[i - dem, j] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i - dem, j] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaPhai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongTren++;
+                }
+            }
+        if (SoQuanDich == 3 && KhoangTrongTren == 1 && ok)
+            DiemPhongNgu -= 200;
+        ok = false;
+        for (int dem = 1; dem <= 4 && i < 21 - 5; dem++)
+        {
+            if (matrix[i + dem, j] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i + dem, j] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaTrai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongDuoi++;
+                }
+        }
+
+        if (SoQuanDich == 3 && KhoangTrongDuoi == 1 && ok)
+            DiemPhongNgu -= 200;
+
+        if (SoQuanTaPhai > 0 && SoQuanTaTrai > 0 && (KhoangTrongTren + KhoangTrongDuoi + SoQuanDich) < 4)
+            return 0;
+
+        DiemPhongNgu -= MangDiemTanCong[SoQuanTaTrai + SoQuanTaPhai];
+        DiemPhongNgu += MangDiemPhongNgu[SoQuanDich];
+        return DiemPhongNgu;
+
+    }
+    private int  duyetPN_CheoXuoi(int i, int j)
+    {
+        
+        int DiemPhongNgu = 0;
+        int SoQuanTaTrai = 0;
+        int SoQuanTaPhai = 0;
+        int SoQuanDich = 0;
+        int KhoangTrongTren = 0;
+        int KhoangTrongDuoi = 0;
+        bool ok = false;
+
+        for (int dem = 1; dem <= 4 && i < 21 - 5 && j < 21 - 5; dem++)
+        {
+            if (matrix[i + dem, j + dem] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i + dem, j + dem] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaPhai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongTren++;
+                }
+        }
+
+        if (SoQuanDich == 3 && KhoangTrongTren == 1 && ok)
+            DiemPhongNgu -= 200;
+
+        ok = false;
+        for (int dem = 1; dem <= 4 && i > 4 && j > 4; dem++)
+        {
+            if (matrix[i - dem, j - dem] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i - dem, j - dem] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaTrai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongDuoi++;
+                }
+        }
+
+        if (SoQuanDich == 3 && KhoangTrongDuoi == 1 && ok)
+            DiemPhongNgu -= 200;
+
+        if (SoQuanTaPhai > 0 && SoQuanTaTrai > 0 && (KhoangTrongTren + KhoangTrongDuoi + SoQuanDich) < 4)
+            return 0;
+
+        DiemPhongNgu -= MangDiemTanCong[SoQuanTaPhai + SoQuanTaTrai];
+        DiemPhongNgu += MangDiemPhongNgu[SoQuanDich];
+
+        return DiemPhongNgu;
+
+    }
+    private int  duyetPN_CheoNguoc(int i, int j)
+    {
+        int DiemPhongNgu = 0;
+        int SoQuanTaTrai = 0;
+        int SoQuanTaPhai = 0;
+        int SoQuanDich = 0;
+        int KhoangTrongTren = 0;
+        int KhoangTrongDuoi = 0;
+        bool ok = false;
+
+        //lên
+        for (int dem = 1; dem <= 4 && i > 4 && j < 21 - 5; dem++)
+        {
+
+            if (matrix[i - dem, j + dem] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i - dem, j + dem] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaPhai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongTren++;
+                }
+        }
+            
+
+        if (SoQuanDich == 3 && KhoangTrongTren == 1 && ok)
+            DiemPhongNgu -= 200;
+
+        ok = false;
+        for (int dem = 1; dem <= 4 && i < 21 - 5 && j > 4; dem++)
+        {
+            if (matrix[i + dem, j - dem] == 1)
+            {
+                if (dem == 1)
+                    DiemPhongNgu += 9;
+
+                SoQuanDich++;
+            }
+            else
+                if (matrix[i + dem, j - dem] == 0)
+                {
+                    if (dem == 4)
+                        DiemPhongNgu -= 170;
+
+                    SoQuanTaTrai++;
+                    break;
+                }
+                else
+                {
+                    if (dem == 1)
+                        ok = true;
+
+                    KhoangTrongDuoi++;
+                }
+        }
+
+        if (SoQuanDich == 3 && KhoangTrongDuoi == 1 && ok)
+            DiemPhongNgu -= 200;
+
+        if (SoQuanTaPhai > 0 && SoQuanTaTrai > 0 && (KhoangTrongTren + KhoangTrongDuoi + SoQuanDich) < 4)
+            return 0;
+
+        DiemPhongNgu -= MangDiemTanCong[SoQuanTaTrai + SoQuanTaPhai];
+        DiemPhongNgu += MangDiemPhongNgu[SoQuanDich];
+
+        return DiemPhongNgu;
+    }
+#endregion
+
+#endregion
+}
